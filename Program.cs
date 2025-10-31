@@ -17,15 +17,18 @@ builder.Services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-// ✅ إعداد CORS للسماح لفرونت إند React بالوصول من Vercel
+// ✅ إعداد CORS للسماح لفرونت إند React بالوصول من Vercel و localhost
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
     {
-        policy.WithOrigins("https://trust-frontend-2l4n.vercel.app") // رابط الريأكت على Vercel
-              .AllowAnyMethod()
-              .AllowAnyHeader()
-              .AllowCredentials();
+        policy.WithOrigins(
+                "https://trust-frontend-2l4n.vercel.app", // الرابط على Vercel
+                "http://localhost:3000"                     // نسخة التطوير المحلية
+            )
+            .AllowAnyMethod()
+            .AllowAnyHeader()
+            .AllowCredentials();
     });
 });
 
