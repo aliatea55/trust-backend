@@ -36,19 +36,20 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ✅ تفعيل Swagger للتوثيق
+// ✅ تفعيل Swagger للتوثيق دائماً (Development + Production)
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ✅ تمكين الأدوات فقط في وضع التطوير
-if (app.Environment.IsDevelopment())
+// تمكين Swagger لجميع البيئات
+app.UseSwagger();
+app.UseSwaggerUI(c =>
 {
-    app.UseDeveloperExceptionPage();
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+    c.SwaggerEndpoint("/swagger/v1/swagger.json", "Trust API V1");
+    c.RoutePrefix = string.Empty; // هذا يجعل Swagger في صفحة الجذر '/'
+});
+
 
 // ✅ ترتيب الـ Middleware
 app.UseStaticFiles(); // لرفع أي ملفات ثابتة مثل الصور
