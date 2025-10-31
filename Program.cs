@@ -4,15 +4,21 @@ using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ✅ ضبط المنفذ ليتوافق مع Render
+// =======================
+// ضبط المنفذ ليتوافق مع Render
+// =======================
 var port = Environment.GetEnvironmentVariable("PORT") ?? "8080";
 builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 
-// ✅ إعداد الاتصال بقاعدة البيانات (SQLite)
+// =======================
+// إعداد الاتصال بقاعدة البيانات (SQLite)
+// =======================
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ✅ إعداد التحكم في تحويل JSON وتفادي المشاكل الدائرية
+// =======================
+// إعداد التحكم في تحويل JSON وتفادي المشاكل الدائرية
+// =======================
 builder.Services
     .AddControllers()
     .AddJsonOptions(options =>
@@ -21,7 +27,9 @@ builder.Services
         options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
     });
 
-// ✅ إعداد CORS للسماح لفرونت إند React بالوصول من Vercel و localhost
+// =======================
+// إعداد CORS للسماح لفرونت إند React بالوصول
+// =======================
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("AllowReactApp", policy =>
@@ -36,13 +44,17 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ✅ تفعيل Swagger للتوثيق
+// =======================
+// تفعيل Swagger للتوثيق
+// =======================
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// ✅ تمكين Swagger دائماً
+// =======================
+// تمكين Swagger دائماً
+// =======================
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
@@ -50,21 +62,25 @@ app.UseSwaggerUI(c =>
     c.RoutePrefix = ""; // تجعل Swagger هو الصفحة الرئيسية
 });
 
-// ✅ ترتيب الـ Middleware
+// =======================
+// ترتيب Middleware
+// =======================
 app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowReactApp");
 app.UseAuthorization();
 app.MapControllers();
 
-// ✅ إعادة توجيه أي طلب على "/" إلى Swagger UI (إذا RoutePrefix لم يكن "")
+// إعادة توجيه أي طلب على "/" إلى Swagger UI
 app.MapGet("/", context =>
 {
     context.Response.Redirect("/swagger");
     return Task.CompletedTask;
 });
 
-// ✅ تشغيل التطبيق مع التعامل مع أي استثناء عند التشغيل
+// =======================
+// تشغيل التطبيق مع التعامل مع أي استثناء عند التشغيل
+// =======================
 try
 {
     app.Run();
