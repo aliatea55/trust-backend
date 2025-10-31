@@ -27,8 +27,8 @@ builder.Services.AddCors(options =>
     options.AddPolicy("AllowReactApp", policy =>
     {
         policy.WithOrigins(
-                "https://trust-frontend-2l4n.vercel.app", // الرابط على Vercel
-                "http://localhost:3000"                     // نسخة التطوير المحلية
+                "https://trust-frontend-2l4n.vercel.app",
+                "http://localhost:3000"
             )
             .AllowAnyMethod()
             .AllowAnyHeader()
@@ -36,28 +36,33 @@ builder.Services.AddCors(options =>
     });
 });
 
-// ✅ تفعيل Swagger للتوثيق دائماً (Development + Production)
+// ✅ تفعيل Swagger للتوثيق
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
+// ✅ تمكين Swagger دائماً
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Trust API V1");
-    // RoutePrefix يمكن تركه فارغ لتكون الصفحة الرئيسية هي Swagger
-    c.RoutePrefix = "swagger";
+    c.RoutePrefix = ""; // تجعل Swagger هو الصفحة الرئيسية
 });
 
-
-
 // ✅ ترتيب الـ Middleware
-app.UseStaticFiles(); // لرفع أي ملفات ثابتة مثل الصور
+app.UseStaticFiles();
 app.UseRouting();
 app.UseCors("AllowReactApp");
 app.UseAuthorization();
 app.MapControllers();
+
+// ✅ إعادة توجيه أي طلب على "/" إلى Swagger UI (إذا RoutePrefix لم يكن "")
+app.MapGet("/", context =>
+{
+    context.Response.Redirect("/swagger");
+    return Task.CompletedTask;
+});
 
 // ✅ تشغيل التطبيق مع التعامل مع أي استثناء عند التشغيل
 try
