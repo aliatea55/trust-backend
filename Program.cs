@@ -42,13 +42,14 @@ builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
 
-// تمكين Swagger لجميع البيئات
 app.UseSwagger();
 app.UseSwaggerUI(c =>
 {
     c.SwaggerEndpoint("/swagger/v1/swagger.json", "Trust API V1");
-    c.RoutePrefix = string.Empty; // هذا يجعل Swagger في صفحة الجذر '/'
+    // RoutePrefix يمكن تركه فارغ لتكون الصفحة الرئيسية هي Swagger
+    c.RoutePrefix = "swagger";
 });
+
 
 
 // ✅ ترتيب الـ Middleware
